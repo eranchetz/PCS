@@ -5,7 +5,8 @@ Param([string]$publishsettings,
       [string]$containerName="mydeployments",
       [string]$config,
       [string]$package,
-      [string]$slot="Production")
+      [string]$slot="Production",
+      [string]$label)
  
 Function Get-File($filter){
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
@@ -43,8 +44,8 @@ Function Create-Deployment($package_url, $service, $slot, $config){
     $opstat = New-AzureDeployment -Slot $slot -Package $package_url -Configuration $config -ServiceName $service
 }
   
-Function Upgrade-Deployment($package_url, $service, $slot, $config){
-    $setdeployment = Set-AzureDeployment -Upgrade -Slot $slot -Package $package_url -Configuration $config -ServiceName $service -Force
+Function Upgrade-Deployment($package_url, $service, $slot, $config, $label){
+    $setdeployment = Set-AzureDeployment -Upgrade -Slot $slot -Label $label -Package $package_url -Configuration $config -ServiceName $service -Force
 }
  
 Function Check-Deployment($service, $slot){
@@ -82,7 +83,7 @@ try{
  
     } else {
         Write-Host "Deployment exists in $service.  Upgrading deployment."
-        Upgrade-Deployment -package_url $package_url -service $service -slot $slot -config $config
+        Upgrade-Deployment -package_url $package_url -service $service -slot $slot -config $config -label $label
         Write-Host "Upgraded Deployment"
     }
  
